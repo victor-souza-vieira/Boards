@@ -29,8 +29,7 @@ class CardServiceTest {
 
     @BeforeEach
     fun `create test dependencies`() {
-        board = Board(id = UUID.fromString("02cc5083-04ad-4c82-938b-2a9e2de66c28"), name = "Board")
-        boardRepository.save(board)
+        board = boardRepository.save(Board(name = "Board"))
     }
 
     @Test
