@@ -1,0 +1,46 @@
+version: "3.3"
+services:
+  postgres:
+    image: postgres:13-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: message-producer
+      POSTGRES_USER: message-producer
+      POSTGRES_PASSWORD: message-producer
+
+  kafka-cluster:
+    image: landoop/fast-data-dev:2.6
+    environment:
+      ADV_HOST: 127.0.0.1         # Change to 192.168.99.100 if using Docker Toolbox
+      RUNTESTS: 0                 # Disable Running tests so the cluster starts faster
+      FORWARDLOGS: 0              # Disable running 5 file source connectors that bring application logs into Kafka topics
+      SAMPLEDATA: 0               # Do not create sea_vessel_position_reports, nyc_yellow_taxi_trip_data, reddit_posts topics with sample Avro records.
+    ports:
+      - "2181:2181"                 # Zookeeper
+      - "9000:3030"                 # Landoop UI
+      - "8081-8083:8081-8083"       # REST Proxy, Schema Registry, Kafka Connect ports
+      - "9581-9585:9581-9585"       # JMX Ports
+      - "9092:9092"                 # Kafka Broker
+
+  prometheus: # responsavel pelas metricas
+    image: prom/prometheus:latest
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana: # responsavel pela exibicao das metricas
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - granafa_data
+
+volumes:
+  prometheus_data:
+  grafana_data:

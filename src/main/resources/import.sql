@@ -1,0 +1,1 @@
+INSERT INTO board values('5483f95a-6355-415d-851f-f0c5633b587c', 'Board Brabo');
